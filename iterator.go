@@ -112,3 +112,28 @@ func (s *FlattenIt[T]) Next() bool {
 func (s *FlattenIt[T]) Get() T {
 	return s.inner.Get()
 }
+
+func Filter[T any](it Iterator[T], f func(x T) bool) Iterator[T] {
+	return &FilterIt[T]{
+		it: it,
+		f:  f,
+	}
+}
+
+type FilterIt[T any] struct {
+	it Iterator[T]
+	f  func(x T) bool
+}
+
+func (s *FilterIt[T]) Next() bool {
+	for s.it.Next() {
+		if s.f(s.it.Get()) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *FilterIt[T]) Get() T {
+	return s.it.Get()
+}

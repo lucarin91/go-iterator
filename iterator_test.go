@@ -93,3 +93,21 @@ func TestFlatten(t *testing.T) {
 		t.Errorf("got:%v, want:%v", got, want)
 	}
 }
+
+func TestFilter(t *testing.T) {
+	s := []int{1, 2, 3, 4}
+
+	it := Filter[int](ToIter(s), func(x int) bool {
+		return x%2 == 0
+	})
+
+	var got []int
+	for it.Next() {
+		got = append(got, it.Get())
+	}
+
+	want := []int{2, 4}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got:%v, want:%v", got, want)
+	}
+}
