@@ -48,6 +48,32 @@ func TestCollect(t *testing.T) {
 	}
 }
 
+func TestCollectOrError(t *testing.T) {
+	s := []int{1, 2, 3, 4}
+
+	// with no error
+	it := Map[int, Result[int]](ToIter(s), func(x int) Result[int] {
+		return Ok(x)
+	})
+	got, err := CollectWithError[int](it)
+	if err != nil {
+		t.Errorf("got err: %v, want nil error", err)
+	}
+	if !reflect.DeepEqual(got, s) {
+		t.Errorf("got:%v, want:%v", got, s)
+	}
+
+	// with error
+	it = Map[int, Result[int]](ToIter(s), func(x int) Result[int] {
+		return Err[int](fmt.Errorf("this is an error"))
+	})
+	_, err = CollectWithError[int](it)
+	if err == nil {
+		t.Errorf("got nil error, want error")
+
+	}
+}
+
 func TestFlatten(t *testing.T) {
 	s := [][]int{{1, 2}, {3, 4}}
 

@@ -54,6 +54,35 @@ func Collect[T any](it Iterator[T]) []T {
 	return out
 }
 
+type Result[T any] struct {
+	value T
+	err   error
+}
+
+func Err[T any](err error) Result[T] {
+	return Result[T]{err: err}
+}
+
+func Ok[T any](value T) Result[T] {
+	return Result[T]{value: value}
+}
+
+func (r Result[T]) Unwrap() (T, error) {
+	return r.value, r.err
+}
+
+func CollectWithError[T any](it Iterator[Result[T]]) ([]T, error) {
+	var out []T
+	for it.Next() {
+		value, err := it.Get().Unwrap()
+		if err != nil {
+			return out, err
+		}
+		out = append(out, value)
+	}
+	return out, nil
+}
+
 func Flatten[T any](it Iterator[Iterator[T]]) Iterator[T] {
 	return &FlattenIt[T]{
 		it: it,
