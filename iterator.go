@@ -10,8 +10,8 @@ type SliceIt[T any] struct {
 	idx   int
 }
 
-func ToIter[T any](slice []T) SliceIt[T] {
-	return SliceIt[T]{
+func ToIter[T any](slice []T) Iterator[T] {
+	return &SliceIt[T]{
 		inner: slice,
 		idx:   -1,
 	}
