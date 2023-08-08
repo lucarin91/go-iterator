@@ -23,7 +23,7 @@ func TestIterators(t *testing.T) {
 func TestMap(t *testing.T) {
 	s := []int{1, 2, 3, 4}
 
-	it := Map[int, string](ToIter(s), func(x int) string {
+	it := Map(ToIter(s), func(x int) string {
 		return fmt.Sprintf("n:%d", x)
 	})
 
@@ -41,7 +41,7 @@ func TestMap(t *testing.T) {
 func TestCollect(t *testing.T) {
 	s := []int{1, 2, 3, 4}
 
-	got := Collect[int](ToIter(s))
+	got := Collect(ToIter(s))
 
 	if !reflect.DeepEqual(got, s) {
 		t.Errorf("got:%v, want:%v", got, s)
@@ -52,10 +52,10 @@ func TestCollectOrError(t *testing.T) {
 	s := []int{1, 2, 3, 4}
 
 	// with no error
-	it := Map[int, Result[int]](ToIter(s), func(x int) Result[int] {
+	it := Map(ToIter(s), func(x int) Result[int] {
 		return Ok(x)
 	})
-	got, err := CollectWithError[int](it)
+	got, err := CollectWithError(it)
 	if err != nil {
 		t.Errorf("got err: %v, want nil error", err)
 	}
@@ -64,7 +64,7 @@ func TestCollectOrError(t *testing.T) {
 	}
 
 	// with error
-	it = Map[int, Result[int]](ToIter(s), func(x int) Result[int] {
+	it = Map(ToIter(s), func(x int) Result[int] {
 		return Err[int](fmt.Errorf("this is an error"))
 	})
 	_, err = CollectWithError[int](it)
@@ -77,15 +77,13 @@ func TestCollectOrError(t *testing.T) {
 func TestFlatten(t *testing.T) {
 	s := [][]int{{1, 2}, {3, 4}}
 
-	it := Map[[]int, Iterator[int]](ToIter(s), func(x []int) Iterator[int] {
+	it := Flatten(Map(ToIter(s), func(x []int) Iterator[int] {
 		return ToIter(x)
-	})
-
-	it3 := Flatten(it)
+	}))
 
 	var got []int
-	for it3.Next() {
-		got = append(got, it3.Get())
+	for it.Next() {
+		got = append(got, it.Get())
 	}
 
 	want := []int{1, 2, 3, 4}
@@ -97,7 +95,7 @@ func TestFlatten(t *testing.T) {
 func TestFilter(t *testing.T) {
 	s := []int{1, 2, 3, 4}
 
-	it := Filter[int](ToIter(s), func(x int) bool {
+	it := Filter(ToIter(s), func(x int) bool {
 		return x%2 == 0
 	})
 
