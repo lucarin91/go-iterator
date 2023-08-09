@@ -109,3 +109,35 @@ func TestFilter(t *testing.T) {
 		t.Errorf("got:%v, want:%v", got, want)
 	}
 }
+
+func TestChunks(t *testing.T) {
+	it := Chunks([]int{1, 2, 3, 4, 5}, 2)
+
+	if !it.Next() {
+		t.Errorf("should have next")
+	}
+	got, want := it.Get(), []int{1, 2}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got:%v, want:%v", got, want)
+	}
+
+	if !it.Next() {
+		t.Errorf("should have next")
+	}
+	got, want = it.Get(), []int{3, 4}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got:%v, want:%v", got, want)
+	}
+
+	if !it.Next() {
+		t.Errorf("should have next")
+	}
+	got, want = it.Get(), []int{5}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got:%v, want:%v", got, want)
+	}
+
+	if it.Next() {
+		t.Errorf("should finish")
+	}
+}

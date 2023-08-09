@@ -137,3 +137,36 @@ func (s *FilterIt[T]) Next() bool {
 func (s *FilterIt[T]) Get() T {
 	return s.it.Get()
 }
+
+func Chunks[T any](input []T, size int) Iterator[[]T] {
+	return &ChunksIt[T]{
+		p:     0,
+		input: input,
+		size:  size,
+	}
+}
+
+type ChunksIt[T any] struct {
+	p     int
+	input []T
+	size  int
+	next  []T
+}
+
+func (b *ChunksIt[T]) Next() bool {
+	if b.p >= len(b.input) {
+		return false
+	}
+
+	start := b.p
+	end := min(b.p+b.size, len(b.input))
+
+	b.p = end
+	b.next = b.input[start:end]
+
+	return true
+}
+
+func (b *ChunksIt[T]) Get() []T {
+	return b.next
+}
