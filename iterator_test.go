@@ -76,6 +76,26 @@ func TestCollectOrError(t *testing.T) {
 	}
 }
 
+func TestCollectOrNone(t *testing.T) {
+	// with all valid values
+	s := []types.Option[int]{types.Some(1), types.Some(2), types.Some(3), types.Some(4)}
+	got, ok := CollectWithOption(ToIter(s))
+	if !ok {
+		t.Error("got false, want true")
+	}
+	want := []int{1, 2, 3, 4}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got:%v, want:%v", got, want)
+	}
+
+	// with None
+	s = []types.Option[int]{types.Some(1), types.None[int](), types.Some(3), types.Some(4)}
+	_, ok = CollectWithOption[int](ToIter(s))
+	if ok {
+		t.Error("got true, want false")
+	}
+}
+
 func TestFlatten(t *testing.T) {
 	s := [][]int{{1, 2}, {3, 4}}
 

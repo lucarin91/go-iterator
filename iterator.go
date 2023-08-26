@@ -68,6 +68,18 @@ func CollectWithError[T any](it Iterator[types.Result[T]]) ([]T, error) {
 	return out, nil
 }
 
+func CollectWithOption[T any](it Iterator[types.Option[T]]) ([]T, bool) {
+	var out []T
+	for it.Next() {
+		value, ok := it.Get().Unwrap()
+		if !ok {
+			return out, ok
+		}
+		out = append(out, value)
+	}
+	return out, true
+}
+
 func Flatten[T any](it Iterator[Iterator[T]]) Iterator[T] {
 	return &FlattenIt[T]{
 		it: it,
