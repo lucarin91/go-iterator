@@ -114,6 +114,24 @@ func TestFlatten(t *testing.T) {
 	}
 }
 
+func TestFlattenResult(t *testing.T) {
+	s := []types.Result[int]{types.Ok(1), types.Err[int](fmt.Errorf("asd")), types.Ok(2)}
+
+	it := Flatten(Map(ToIter(s), func(x types.Result[int]) Iterator[int] {
+		return x.ToIter()
+	}))
+
+	var got []int
+	for it.Next() {
+		got = append(got, it.Get())
+	}
+
+	want := []int{1, 2}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got:%v, want:%v", got, want)
+	}
+}
+
 func TestFilter(t *testing.T) {
 	s := []int{1, 2, 3, 4}
 

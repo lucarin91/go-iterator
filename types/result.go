@@ -17,3 +17,26 @@ func (r Result[T]) Unwrap() (T, error) {
 	return r.value, r.err
 }
 
+type ResultIt[T any] struct {
+	ended  bool
+	result Result[T]
+}
+
+func (r Result[T]) ToIter() *ResultIt[T] {
+	return &ResultIt[T]{
+		ended:  false,
+		result: r,
+	}
+}
+
+func (s *ResultIt[T]) Next() bool {
+	if s.ended {
+		return false
+	}
+	s.ended = true
+	return s.result.err == nil
+}
+
+func (s *ResultIt[T]) Get() T {
+	return s.result.value
+}
