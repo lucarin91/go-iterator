@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/lucarin91/go-iterator/types"
 )
 
 func TestIterators(t *testing.T) {
@@ -52,8 +54,8 @@ func TestCollectOrError(t *testing.T) {
 	s := []int{1, 2, 3, 4}
 
 	// with no error
-	it := Map(ToIter(s), func(x int) Result[int] {
-		return Ok(x)
+	it := Map(ToIter(s), func(x int) types.Result[int] {
+		return types.Ok(x)
 	})
 	got, err := CollectWithError(it)
 	if err != nil {
@@ -64,8 +66,8 @@ func TestCollectOrError(t *testing.T) {
 	}
 
 	// with error
-	it = Map(ToIter(s), func(x int) Result[int] {
-		return Err[int](fmt.Errorf("this is an error"))
+	it = Map(ToIter(s), func(x int) types.Result[int] {
+		return types.Err[int](fmt.Errorf("this is an error"))
 	})
 	_, err = CollectWithError[int](it)
 	if err == nil {

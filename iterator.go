@@ -1,5 +1,7 @@
 package iterator
 
+import "github.com/lucarin91/go-iterator/types"
+
 type Iterator[T any] interface {
 	Next() bool
 	Get() T
@@ -54,24 +56,7 @@ func Collect[T any](it Iterator[T]) []T {
 	return out
 }
 
-type Result[T any] struct {
-	value T
-	err   error
-}
-
-func Err[T any](err error) Result[T] {
-	return Result[T]{err: err}
-}
-
-func Ok[T any](value T) Result[T] {
-	return Result[T]{value: value}
-}
-
-func (r Result[T]) Unwrap() (T, error) {
-	return r.value, r.err
-}
-
-func CollectWithError[T any](it Iterator[Result[T]]) ([]T, error) {
+func CollectWithError[T any](it Iterator[types.Result[T]]) ([]T, error) {
 	var out []T
 	for it.Next() {
 		value, err := it.Get().Unwrap()
